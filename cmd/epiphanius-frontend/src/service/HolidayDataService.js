@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 
-const HOLIDAY_API_URL = 'http://localhost:9080'
+const HOLIDAY_API_URL = 'http://localhost:3000' //9080
 
 class HolidayDataService {
 
@@ -28,7 +28,7 @@ class HolidayDataService {
     createHoliday(holiday) {
 
         return axios.post(`${HOLIDAY_API_URL}/holidays`, holiday);
-    }   
+    }
 }
 
 export default new HolidayDataService()
