@@ -121,16 +121,13 @@ func UpdateHoliday(w http.ResponseWriter, r *http.Request) {
 
 	var request requests.Holiday
 	err = json.Unmarshal(body, &request)
-	fmt.Println("=bodyUpdate=bodyUpdate")
-	fmt.Println(request)
-	fmt.Println("=bodyUpdate=bodyUpdate")
 
 	if err != nil {
 		log.Info("error update holiday")
 	}
 
 	date, err := time.Parse("02.01.2006", request.Date)
-	fmt.Println("RomaRomaRoma")
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("Error: %v", err)))
