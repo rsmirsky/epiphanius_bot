@@ -21,13 +21,3 @@ type TelegramUser struct {
 func (u TelegramUser) Recipient() string {
 	return u.UserID
 }
-
-
-// type TelegramChannel struct {
-// 	ChatID string
-// }
-
-// func (u TelegramChannel) Recipient() string {
-// 	return u.ChatID
-// }
-

@@ -16,18 +16,16 @@ import (
 	"gorm.io/datatypes"
 )
 
-
 func CreateUser(userId int64, userName string) {
 
-	users := models.Users {
-      UserName: userName,
-	  UserID:   userId,
+	users := models.Users{
+		UserName: userName,
+		UserID:   userId,
 	}
 	if err := storage.CreateUser(users); err != nil {
-		fmt.Println(err)
+		log.Errorf("error create user", err)
 	}
 }
-
 
 func CreateHoliday(w http.ResponseWriter, r *http.Request) {
 	// Read to request body
@@ -45,39 +43,33 @@ func CreateHoliday(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	date,err := time.Parse("02.01.2006", request.Date)
+	date, err := time.Parse("02.01.2006", request.Date)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("Error: %v", err)))
 		return
 	}
-    // fmt.Println("=id=id=id=")
-    // fmt.Println(request.Id)
-    // fmt.Println("=id=id=id=")
-	holiday := models.Holiday{
-		Name: request.Name,
-		Description: request.Description,
-		Date: datatypes.Date(date),
-	}
 
-	// Append to the Books table
+	holiday := models.Holiday{
+		Name:        request.Name,
+		Description: request.Description,
+		Date:        datatypes.Date(date),
+	}
 
 	if err := storage.CreateHoliday(holiday); err != nil {
-		fmt.Println(err)
+		log.Errorf("error create holiday", err)
 	}
 
-	// Send a 201 created response
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode("Created")
 }
 
 func DeleteHoliday(w http.ResponseWriter, r *http.Request) {
-	// Read the dynamic id parameter
+
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
-	// Delete that book
 	storage.DeleteHoliday(id)
 
 	log.Info("delete record")
@@ -88,14 +80,13 @@ func DeleteHoliday(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetHoliday(w http.ResponseWriter, r *http.Request) {
-	// Read dynamic id parameter
+
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
 	holiday, err := storage.GetHoliday(id)
 	if err != nil {
-		// TODO: handle error
-		return
+		log.Infof("error get holiday with id:%v", id)
 	}
 
 	w.Header().Add("Content-Type", "application/json")
@@ -106,8 +97,7 @@ func GetHoliday(w http.ResponseWriter, r *http.Request) {
 func GetHolidays(w http.ResponseWriter, r *http.Request) {
 	holidays, err := storage.GetHolidays()
 	if err != nil {
-		// TODO: handle error
-		return
+		log.Info("error get holidays")
 	}
 
 	w.Header().Add("Content-Type", "application/json")
@@ -126,7 +116,7 @@ func UpdateHoliday(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	//log.Info("this body has:", body)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("error read body on update holiday", err)
 	}
 
 	var request requests.Holiday
@@ -134,32 +124,28 @@ func UpdateHoliday(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("=bodyUpdate=bodyUpdate")
 	fmt.Println(request)
 	fmt.Println("=bodyUpdate=bodyUpdate")
-	//log.Info("json unmarshal update", update, id)
+
 	if err != nil {
-		// TODO: handle error
-		return
+		log.Info("error update holiday")
 	}
 
-	
-	date,err := time.Parse("02.01.2006", request.Date)
+	date, err := time.Parse("02.01.2006", request.Date)
 	fmt.Println("RomaRomaRoma")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("Error: %v", err)))
 		return
 	}
-	
 
 	update := models.Holiday{
-		Name: request.Name,
+		Name:        request.Name,
 		Description: request.Description,
-		Date: datatypes.Date(date),
+		Date:        datatypes.Date(date),
 	}
 
 	err = storage.UpdateHoliday(id, update)
 	if err != nil {
 		log.Info("update error")
-		return
 	}
 
 	log.Info("update record")

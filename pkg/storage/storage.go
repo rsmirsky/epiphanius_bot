@@ -3,7 +3,6 @@ package storage
 import (
 	"epiphanius_bot/pkg/models"
 	"epiphanius_bot/pkg/types"
-	"fmt"
 
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -40,50 +39,20 @@ func CreateUser(users models.Users) error {
 			log.Info("error create new user")
 		}
 	}
-    return nil
-	//return  db.Create(&users).Error
-
-	//  fmt.Println("==1=1=1=")
-	//  fmt.Println(exists)
-	//  fmt.Println("==1=1=1=")
-
-	//  return err
-	//  if exists == false {
-	// 	return  db.Create(&users).Error
-	//  }
-	//   return nil
-	// r := db.Find(&users)
-	// exists := r.RowsAffected > 0
-	// if exists == true {
-	// 	return nil
-	// }
-	// return db.Create(&users).Error
+	return nil
 
 }
-
-// 	result := db.First(&users)
-
-// 	if result.RowsAffected != nil {
-// 		return nil
-// 	} else {
-// 	return db.Create(&users).Error
-// 	}
-// }
 
 func DeleteHoliday(id int) error {
 
-	// TODO: не обязательно доставать запись, можно сразу удалить по айди
-
 	var holiday models.Holiday
-	if err := db.First(&holiday, id).Error; err != nil {
-		return err
-	}
 
-	return db.Delete(&holiday).Error
+	return db.Delete(&holiday, id).Error
+
 }
 
 func GetUsers() ([]models.Users, error) {
-	//var messages []types.Message
+
 	var users []models.Users
 	err := db.Find(&users).Error
 	return users, err
@@ -91,13 +60,11 @@ func GetUsers() ([]models.Users, error) {
 
 func GetHoliday(id int) (models.Holiday, error) {
 	var holiday models.Holiday
-	fmt.Println("=id=id=id=")
-	fmt.Println(id)
-	fmt.Println("=id=id=id=")
 	err := db.First(&holiday, id).Error
-	fmt.Println("=Getholiday=Getholiday=Getholiday=")
-	fmt.Println(holiday)
-	fmt.Println("=Getholiday=Getholiday=Getholiday=")
+	if err != nil {
+		log.Infof("error get holiday: %v", id)
+	}
+
 	return holiday, err
 }
 
@@ -111,6 +78,7 @@ func UpdateHoliday(id int, r models.Holiday) error {
 	var holiday models.Holiday
 
 	if err := db.First(&holiday, id).Error; err != nil {
+		log.Infof("holiday with id:%v - not found", id)
 		return err
 	}
 
@@ -135,17 +103,10 @@ func NextHoliday() ([]types.Message, error) {
 	var messages []types.Message
 
 	err := db.Raw(getMessagesQuery).Scan(&messages).Error
-	fmt.Println("---------------------")
-	fmt.Println(messages)
-	fmt.Println("---------------------")
-	return messages, err 
+	return messages, err
 }
 
 func GetMessages() ([]types.Message, error) {
-
-	// var messages []types.Message
-	// err := db.Find(&messages).Error
-	// return messages, err
 
 	const getMessagesQuery = `SELECT
 		name,
@@ -158,8 +119,5 @@ func GetMessages() ([]types.Message, error) {
 	var messages []types.Message
 
 	err := db.Raw(getMessagesQuery).Scan(&messages).Error
-	fmt.Println("---------------------")
-	fmt.Println(messages)
-	fmt.Println("---------------------")
 	return messages, err
 }

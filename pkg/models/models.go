@@ -8,13 +8,9 @@ type Holiday struct {
 	Id          int            `json:"id" gorm:"primaryKey"`
 	Name        string         `json:"name"`
 	Description string         `json:"description"`
-	Date        datatypes.Date      `json:"date"`//datatypes.Date
+	Date        datatypes.Date      `json:"date"`
 }
 
-// type StoredMessage struct {
-// 	MessageID int   `sql:"message_id" json:"message_id"`
-// 	ChatID    int64 `sql:"chat_id" json:"chat_id"`
-// }
 
 type Users struct {
 	Id       int    `json:"id" gorm:"primaryKey"`
