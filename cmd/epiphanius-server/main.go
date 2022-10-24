@@ -40,9 +40,11 @@ func main() {
 	
 
 	//initial data base
+	//DSN_POSTGRES=host=localhost user=postgres password=32129 dbname=epiphanius_admin port=5432 sslmode=disable TimeZone=Asia/Shanghai
 	log.Info("start connect to database")
 	DB := db.Connect(viper.GetString("DSN_POSTGRES"))
 
+	
 
 
 	//migration
